@@ -48,7 +48,7 @@ Images, syntax highlighting, math, data tables, Mermaid, hand-written SVG and EC
 
 Chinese lives at the root; English lives under `/en`. A matching file in `content/posts/en/` becomes the translation automatically. Without one, the post simply exists in Chinese only.
 
-`next.config.ts` rewrites the default-locale paths into `/zh`, and `src/proxy.ts` redirects `/zh/...` back to the root with a 308. That keeps `/posts/hello` as the only address, with no second canonical. The proxy, the dynamic 404 and the `/content/images/` image route need a Node runtime, so the default deployment is `next start`, not dropping `.next` onto a static host.
+The template defaults to a Node runtime. This blog is deployed to Cloudflare Pages, so it switches to a static export during the build: `next build` writes `/zh/...` and `/en/...`, then the `/zh` output is copied to the root and `/zh` is redirected there by `_redirects`; `content/images` is copied into `/content/images`. There is no proxy, image route or dynamic 404. Pages, RSS, sitemap and the social card are still build-time output.
 
 ## A design language, not a skin
 

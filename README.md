@@ -22,8 +22,8 @@ npm ci
 npm run dev          # http://localhost:3000
 npm run lint
 npx tsc --noEmit
-npm run build
-npm start
+npm run build        # next build + postbuild → out/
+npm run preview      # npx serve out
 ```
 
 Node 20.9 以上。构建前设置站点地址（默认已是 `https://blog.swufefox.com`）：
@@ -59,13 +59,23 @@ src/styles/globals.css    ak-ui 主题映射与全站样式
 | [配置与主题](docs/configuration.md) | `site.config.ts`、界面文案、语言与配色 |
 | [设计系统](docs/design-system.md) | ak-ui 组件、信号色、版式与取舍 |
 | [架构](docs/architecture.md) | 路由、渲染管线、客户端边界、搜索 |
-| [部署](docs/deploy.md) | Node 主机、Vercel / Netlify、子路径与静态托管取舍 |
+| [部署](docs/deploy.md) | Cloudflare Pages 静态导出、构建设置与路由 |
 
 ## 部署
 
-默认部署到 Node 主机或 Vercel / Netlify，使用 `next start`。代理、动态 404 与
-`/content/images/` 图片路由需要运行时；纯静态导出需要按 [`docs/deploy.md`](docs/deploy.md)
-迁移。
+博客以 **静态导出** 部署到 Cloudflare Pages，不需要 Node 运行时。
+
+- Framework preset：**Next.js (Static HTML Export)**
+- Build command：**`npm run build`**（会执行 `postbuild`，复制默认语言、图片和 404）
+- Build output directory：**`out`**
+- Root directory：留空或 `/`
+- 环境变量：`NEXT_PUBLIC_SITE_URL`。首轮可用
+  `https://blog-swufefox-com.pages.dev`；接上自定义域名后改为 `https://blog.swufefox.com`。
+- 建议设置 `NODE_VERSION=22`（构建仍需要 Node 20.9+）。
+
+`public/_redirects` 把 `/zh/...` 301 回根路径，`public/_headers` 给 `/og` 设置图片类型；
+`scripts/export-static.mjs` 在构建后把 `content/images` 和默认语言页面复制进 `out`。
+详细说明见 [`docs/deploy.md`](docs/deploy.md)。
 
 ## 关于 SwufeFox
 

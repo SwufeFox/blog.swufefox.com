@@ -2,15 +2,15 @@
 
 ## Project Overview
 
-`blog.swufefox.com` is the bilingual (Chinese default, English at `/en`) blog of SwufeFox, the student-led open-source community at Southwestern University of Finance and Economics (SWUFE), authored by Magixyne. It is derived from [`open-ak-blog-template`](https://github.com/SwufeFox/ak-blog-template) and keeps the same Next.js 16.4.6, React 19.3, TypeScript (strict) and `@swufefox/ak-ui-react` 2.0 foundation. Markdown is parsed and rendered during `next build`; production runs as a Node server because locale routing, the custom 404 and image delivery need a runtime. Code is MIT; articles use the configured CC BY-NC-SA 4.0 license.
+`blog.swufefox.com` is the bilingual (Chinese default, English at `/en`) blog of SwufeFox, the student-led open-source community at Southwestern University of Finance and Economics (SWUFE), authored by Magixyne. It is derived from [`open-ak-blog-template`](https://github.com/SwufeFox/ak-blog-template) and keeps the same Next.js 16.4.6, React 19.3, TypeScript (strict) and `@swufefox/ak-ui-react` 2.0 foundation. Markdown is parsed and rendered during `next build`; this repository exports a static site for Cloudflare Pages, with no Node runtime in production. The upstream template still supports `next start`; this blog does not. Code is MIT; articles use the configured CC BY-NC-SA 4.0 license.
 
 ## Architecture & Data Flow
 
 - **Content**: `content/posts/*.md` is the default (`zh`) collection; `content/posts/en/*.md` holds translations with matching filenames/slugs. `src/lib/posts.ts` parses YAML with `gray-matter`, validates it, caches the collection at module scope, sorts newest-first, filters drafts in production and derives tags/categories/translations.
 - **Front matter**: required `title`, `description` and `date`; date/`updated` must match `YYYY-MM-DD` (format check only); `tags` must be a list; optional `category` (legacy `tag` accepted); `draft: true` is included in development and hidden in production. Errors must name the source file, e.g. `content/posts/x.md: missing required field "title"`.
 - **Markdown**: `src/lib/markdown.ts` builds a unified processor per render. Authored raw HTML is stripped before `rehypeRaw` processes pipeline-generated HTML. It handles GFM, math, Shiki code, h2/h3 TOC extraction (autolink `#` excluded), and the custom `data`, `stats`, `mermaid`, `sketch` and `echarts` fences.
-- **Images**: relative post images resolve to `/content/images/...`; local files get intrinsic `width`/`height` via `image-size` plus `loading="lazy"`/`decoding="async"`. `src/app/content/[...path]/route.ts` serves only allowed formats from `content/images`, checks path containment and sets immutable caching.
-- **Routing**: default locale lives at `/`, other locales at `/en/...`. `next.config.ts` rewrites bare paths to the default locale; `src/proxy.ts` 308-redirects `/zh/...` duplicates. The locale layout owns locale `generateStaticParams`; posts and tag terms add their own content params; the feed is `force-static`. Home, archive and search are statically rendered via the locale params.
+- **Images**: relative post images resolve to `/content/images/...`; local files get intrinsic `width`/`height` via `image-size` plus `loading="lazy"`/`decoding="async"`. Static export has no image route; `scripts/export-static.mjs` copies `content/images` into `out/content/images` after the build.
+- **Routing**: default locale lives at `/`, other locales at `/en/...`. In development `next.config.ts` rewrites bare paths to `/zh`; production uses `output: 'export'`. The locale layout owns locale `generateStaticParams`; posts and tag terms add their own content params; the feed is `force-static`. `scripts/export-static.mjs` copies `/zh` output to the root and `public/_redirects` 301s `/zh/...` back to root. `src/app/[locale]/[...rest]`, `src/proxy.ts` and the image route were intentionally removed.
 - **Metadata**: home canonical comes from `src/app/[locale]/layout.tsx`; posts, archive, tag terms and search declare their own `alternates.canonical` and `languages` in `generateMetadata`. Search is `noindex`; 404 is `noindex/nofollow`. All pages share the 1200×630 `/og` social card (`src/app/og/route.tsx`, descriptor in `src/lib/social.ts`) through layout/post Open Graph and Twitter metadata.
 - **Search**: server pages pass localized post summaries to `src/components/search-client.tsx`; filtering and ranking happen client-side (title 4, tag/category 2, summary 1). No search backend or index file. The query is mirrored to `?q=` with `history.replaceState` so links reload correctly.
 - **ak-ui boundary**: `@swufefox/ak-ui-react` is a client-entry package but can be imported from server components; every component is SSR'd then hydrated. There is **no `src/components/ak.ts` forwarding layer** — import primitives directly. `AkMobileMenu` is mounted only after hydration via `useSyncExternalStore` to avoid the package's module-counter ID mismatch.
@@ -27,7 +27,7 @@
 | `src/styles/` | Global tokens, ak-ui adaptations, layout and responsive rules |
 | `content/posts/` | Markdown posts; locale subdirectory holds translations |
 | `content/images/` | Post images, served by the `/content/...` route |
-| `public/` | Static passthrough assets (favicon) |
+| `public/` | Static passthrough: fox mark, 404, `_redirects`, `_headers` |
 | `docs/` | Writing, configuration, architecture, design-system and deployment guides |
 
 ## Development Commands
@@ -37,11 +37,11 @@ npm ci
 npm run dev          # http://localhost:3000
 npm run lint         # eslint src
 npx tsc --noEmit     # type check; no package script
-npm run build        # production build + content/Markdown validation
-npm start            # serve the production build
+npm run build        # static export to out/ + content/Markdown validation
+npm run preview      # npx serve out
 ```
 
-Set `NEXT_PUBLIC_SITE_URL` before `npm run build` for real canonical/RSS/sitemap URLs. Change the port with `PORT=8080 npm start`. There is no `test` script.
+Set `NEXT_PUBLIC_SITE_URL` before `npm run build` for real canonical/RSS/sitemap URLs. For a local preview, `npm run preview` serves `out/`; pass `--listen 3048` to `npx serve` if needed. There is no `test` script.
 
 ## Code Conventions & Common Patterns
 
@@ -60,27 +60,28 @@ Set `NEXT_PUBLIC_SITE_URL` before `npm run build` for real canonical/RSS/sitemap
 - `src/lib/posts.ts` — discovery, front-matter validation, caching, translations, tags/categories.
 - `src/lib/markdown.ts` — unified pipeline, custom fences, TOC, media metadata.
 - `src/lib/urls.ts` — locale-aware route builders.
-- `src/proxy.ts` + `next.config.ts` — locale redirect/rewrite pair.
+- `next.config.ts` — dev rewrites; production static export.
 - `src/app/[locale]/layout.tsx` — theme boot script, shell, metadata defaults.
-- `src/app/content/[...path]/route.ts` — guarded image delivery.
+- `scripts/export-static.mjs` — copies default-locale output, content images and branded 404 into `out/`.
 - `src/app/og/route.tsx` + `src/lib/social.ts` — 1200×630 social card and its metadata descriptor.
 - `src/components/site-nav.tsx`, `theme-toggle.tsx`, `search-client.tsx`, `post-toc.tsx`, `post-runtime.tsx` — hydration-sensitive client behavior.
 - `src/styles/globals.css` — tokens, layout, ak-ui adaptations, print rules.
 - `package.json`, `package-lock.json`, `tsconfig.json`, `eslint.config.mjs` — scripts, locked deps, compiler/lint config.
+- `public/_redirects`, `public/_headers`, `public/404.html` — Cloudflare routing, OG content type and branded static 404.
 - `docs/architecture.md`, `docs/writing.md`, `docs/configuration.md`, `docs/design-system.md`, `docs/deploy.md` — implementation, authoring, setup, UI rules, deployment.
 
 ## Runtime/Tooling Preferences
 
 - Node.js **20.9+** and npm with the committed `package-lock.json` (lockfile v3). Next.js is pinned to 16.4.6, React 19.3.0; do not assume older Next conventions.
-- This Next.js requires reading the relevant guide in `node_modules/next/dist/docs/` before changing framework code. `params` in pages/layouts are Promises; `src/proxy.ts` is the middleware entry.
-- The app needs a Node runtime: rewrites/proxy, the dynamic 404 catch-all and the image route are runtime features. Static export is **not** supported as-is; `docs/deploy.md` documents the migration. Vercel/Netlify and `next start` self-hosting are supported.
-- `src/site.config.ts` defaults `url` to `https://blog.swufefox.com`; override with `NEXT_PUBLIC_SITE_URL` at build time. Deployment port defaults to 3000; `PORT` overrides it.
+- This Next.js requires reading the relevant guide in `node_modules/next/dist/docs/` before changing framework code. `params` in pages/layouts are Promises. The dev server uses the root rewrites; the production build is a static export.
+- Cloudflare Pages serves `out/` from `npm run build`: framework preset Next.js (Static HTML Export), build command `npm run build`, output `out`, root directory empty. The postbuild step needs to run, so use `npm run build` rather than `npx next build`. No Node runtime is deployed.
+- `src/site.config.ts` defaults `url` to `https://blog.swufefox.com`; override with `NEXT_PUBLIC_SITE_URL` at build time (for Pages preview use `https://blog-swufefox-com.pages.dev`). Build-time Node 20.9+ is required; there is no production `PORT`.
 
 ## Testing & QA
 
 - No test runner, test files, coverage setup, CI workflow or `npm test` exists. Do not claim a test suite passed.
 - For code changes run `npm run lint`, `npx tsc --noEmit`, and `npm run build`. The build exercises real front matter and Markdown rendering, and fails on invalid content.
-- After route/browser changes run `npm start` and smoke the affected pages: both locale homes (`/`, `/en`), a post, tag index/term, search, feeds, and a missing path/404. Check the `archive` and `terminal` themes, theme persistence, keyboard focus, console errors and narrow-viewport overflow.
+- After route/browser changes run `npm run build`, then `npm run preview` (or `npx serve out`) and smoke the affected pages: both locale homes (`/`, `/en`), a post, tag index/term, search, feeds, and a missing path/404. Check the `archive` and `terminal` themes, theme persistence, keyboard focus, console errors and narrow-viewport overflow.
 - Content-specific checks: malformed YAML/front matter and invalid ECharts JSON fail at build; Mermaid errors surface in the browser console. There is no automated substitute for these manual checks.
 
 <!-- BEGIN:nextjs-agent-rules -->

@@ -1,95 +1,66 @@
-# 部署
+# 部署（Cloudflare Pages）
 
-产物是一个标准的 Next.js 应用。页面都在构建时生成好了，但有三处需要运行时，所以默认面向
-Node 主机，而不是纯文件托管：
+博客以 **静态导出** 发布，不需要 Node 运行时。`npm run build` 会执行 `next build`，随后
+`postbuild` 脚本把产物整理成 Cloudflare Pages 能直接服务的 `out/`。
 
-| 运行时依赖 | 文件 | 作用 |
-| --- | --- | --- |
-| 代理 | `src/proxy.ts` | 把 `/zh/…` 308 回根路径 |
-| 动态 404 | `src/app/[locale]/[...rest]/page.tsx` | 未知路径返回带站点外壳的 404 |
-| 图片路由 | `src/app/content/[...path]/route.ts` | 提供 `content/images/` 里的图片 |
+## Cloudflare Pages 设置
 
-## 构建
+| 字段 | 值 |
+| --- | --- |
+| Framework preset | **Next.js (Static HTML Export)**（没有该选项时选 None，手动填下面两项） |
+| Build command | **`npm run build`** |
+| Build output directory | **`out`** |
+| Root directory | 留空或 `/`（仓库根目录） |
+| Branch | `main` |
 
-```sh
-npm install
-npm run build
-npm start        # 默认 http://localhost:3000
-```
+构建命令必须是 `npm run build`，不要写成 `npx next build`：构建后的 `postbuild` 才会复制默认语言页面、图片和 404。
 
-Node 20.9 以上。端口用 `PORT` 环境变量改：`PORT=8080 npm start`。
+### 环境变量
 
-站点地址在构建时写进 canonical、RSS 和 sitemap，所以**构建前**就要定下来：
+| 变量 | 值 |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | 首轮可用 `https://blog-swufefox-com.pages.dev`；接上自定义域名后改为 `https://blog.swufefox.com` |
+| `NODE_VERSION` | `22`（构建需要 Node 20.9+） |
 
-```sh
-NEXT_PUBLIC_SITE_URL=https://blog.example.com npm run build
-```
+`NEXT_PUBLIC_SITE_URL` 会被写进 canonical、RSS、sitemap、OG 卡片和结构化数据，所以要在构建前设好。
 
-或者直接改 `src/site.config.ts` 的 `url`。
-
-## Vercel / Netlify
-
-连上仓库即可，框架会自动识别。没有需要填的环境变量（除非想覆盖 `url`）。
-
-## 自己的服务器
+## 本地构建
 
 ```sh
-git clone <repo> && cd <repo>
 npm ci
-NEXT_PUBLIC_SITE_URL=https://blog.example.com npm run build
-PORT=3000 npm start
+npm run build     # next build + scripts/export-static.mjs
+npm run preview   # npx serve out
 ```
 
-前面放一层 nginx / Caddy 做 TLS 和域名即可。`next start` 不需要额外的进程管理器参数，
-用 systemd、pm2 或容器都行。
+`npm run dev` 仍然在 `http://localhost:3000` 用 `/` 访问默认语言；它使用开发期的重写，不依赖静态复制。
 
-## 子路径
+## 构建后处理
 
-部署在 `https://example.com/blog` 这类子路径下时，只需要把 `url` 写成带路径的地址，
-页面里的绝对链接、canonical、RSS、sitemap 会跟着变。不需要 `basePath`。
+`scripts/export-static.mjs` 做三件事：
 
-如果反向代理会把前缀剥掉（例如 nginx 的 `location /blog/ { proxy_pass http://127.0.0.1:3000/; }`），
-那 `url` 仍然写完整地址，路由本身看到的是剥掉前缀后的路径，两边不会打架。
+1. 把 `content/images` 复制到 `out/content/images`，正文里的 `/content/images/...` 继续有效；
+2. 把 `out/zh` 的页面复制到 `out` 根目录，让默认语言仍然位于 `/`；
+3. 把 `public/404.html` 复制成 `out/404.html`，使用带 SwufeFox 外观的静态 404。
 
-## 纯静态托管
+`public/_redirects` 把重复的 `/zh/...` 301 回根路径；`public/_headers` 给无扩展名的
+`/og` 文件补上 `image/png`。
 
-`output: 'export'` 不支持重写、重定向和代理（见 Next.js 文档的 Unsupported Features），
-而本模板恰好用重写把默认语言的页面放到了根路径。所以要走纯静态，需要接受前缀或让托管方补上重写：
+## 自定义域名
 
-1. 删掉 `src/proxy.ts` 和 `src/app/[locale]/[...rest]/page.tsx`。
-   前者导出模式不会执行，后者是无法预渲染的动态路由。
-2. 把 `content/images/` 里的图片移到 `public/`，正文里的相对路径改成 `/images/…`，
-   然后删掉 `src/app/content/[...path]/route.ts`（它同样无法预渲染）。
-3. 在 `next.config.ts` 里打开 `output: 'export'`，并按托管方的习惯决定
-   `trailingSlash`（`true` 产出 `out/posts/x/index.html`，`false` 产出 `out/posts/x.html`）。
-4. 产物里默认语言的页面在 `/zh/…` 下，没有 `/posts/x`。要么接受这个前缀，
-   要么在托管方那里补一条重写（nginx 示例）：
-
-```nginx
-location ~ ^/(posts|tags|search)/ {
-  rewrite ^/(.*)$ /zh/$1 last;
-}
-location = /feed.xml {
-  rewrite ^ /zh/feed.xml last;
-}
-```
-
-`out/404.html` 是 404 页，交给托管方配置。
-
-不追求纯文件的话，前两种部署方式（Vercel / 自建 Node）不需要做这些，也保留了
-`/posts/x` 这样的干净地址。
+在 Pages 项目里绑定 `blog.swufefox.com`，然后把 `NEXT_PUBLIC_SITE_URL` 改成
+`https://blog.swufefox.com` 并重新部署。`_redirects`、OG、RSS 与 sitemap 都会跟着新域名生成。
 
 ## 上线后检查
 
 ```sh
-curl -sI  https://blog.example.com/            # 200
-curl -sI  https://blog.example.com/en          # 200
-curl -sI  https://blog.example.com/feed.xml    # 200, application/rss+xml
-curl -s   https://blog.example.com/sitemap.xml | head
-curl -sI  https://blog.example.com/nope        # 404
-curl -sI  https://blog.example.com/content/images/pipeline.svg   # 200
-curl -sI  https://blog.example.com/og                             # 200, image/png
+curl -sI https://blog-swufefox-com.pages.dev/                         # 200
+curl -sI https://blog-swufefox-com.pages.dev/en                       # 200
+curl -sI https://blog-swufefox-com.pages.dev/feed.xml                 # 200, application/rss+xml
+curl -sI https://blog-swufefox-com.pages.dev/og                       # 200, image/png
+curl -s  https://blog-swufefox-com.pages.dev/sitemap.xml | head
+curl -sI https://blog-swufefox-com.pages.dev/nope                     # 404, 自定义 404
+curl -sI https://blog-swufefox-com.pages.dev/content/images/pipeline.svg # 200
+curl -sI https://blog-swufefox-com.pages.dev/zh                       # 301 → /
 ```
 
-图片带 `Cache-Control: public, max-age=31536000, immutable`，RSS 是一小时。
-静态页面由 Next 自己决定缓存头；放在 CDN 后面时按 HTML 的正常策略处理即可。
+Cloudflare Pages 会把 `/en.html` 匹配到 `/en`、`/posts/x.html` 匹配到 `/posts/x`；不需要额外重写。

@@ -48,7 +48,7 @@ flowchart LR
 
 中文在根路径，英文在 `/en`。同一篇文章在 `content/posts/en/` 下放一个同名文件，就自动成为翻译；没有翻译时，文章仍然只出现在中文里。
 
-默认语言的路由由 `next.config.ts` 的重写放进 `/zh`，再由 `src/proxy.ts` 把 `/zh/...` 308 回根路径。这样 `/posts/hello` 是唯一地址，不会出现两套 canonical。代理、动态 404 和 `/content/images/` 图片路由都需要 Node 运行时，所以默认部署方式是 `next start`，而不是把 `.next` 直接丢给静态托管。
+模板默认用 Node 运行时；这个博客部署在 Cloudflare Pages，所以构建时切换成静态导出：`next build` 生成 `/zh/...` 与 `/en/...`，随后把 `/zh` 的输出复制到根路径，`/zh` 由 `_redirects` 301 回根；`content/images` 在构建时复制到 `/content/images`。不再需要代理、图片路由或动态 404；页面、RSS、sitemap 和分享卡片仍是构建时产物。
 
 ## 设计语言不是一层皮肤
 

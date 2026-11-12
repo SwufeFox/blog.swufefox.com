@@ -358,7 +358,7 @@ main {
 
 .home-hero .ak-hero__side {
   border-left: 1px solid color-mix(in srgb, var(--site-brand-gold) 55%, transparent);
-  background: #fff url('/swufefox.jpg') center / 74% no-repeat;
+  background: var(--site-brand-cream) url('/swufefox.jpg') center / 74% no-repeat;
   opacity: 1;
 }
 

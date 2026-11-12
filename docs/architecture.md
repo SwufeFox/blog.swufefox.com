@@ -23,15 +23,14 @@ flowchart LR
 | `/search` | `src/app/[locale]/search/page.tsx` | 搜索（`noindex`） |
 | `/feed.xml` | `src/app/[locale]/feed.xml/route.ts` | 每个语言一份 RSS |
 | `/sitemap.xml`、`/robots.txt` | `src/app/sitemap.ts`、`src/app/robots.ts` | 自动生成 |
-| `/content/images/…` | `src/app/content/[...path]/route.ts` | 正文图片，带长缓存 |
+| `/content/images/…` | `scripts/export-static.mjs` + `public/_headers` | 正文图片，构建时复制进 `out/` |
 | `/og` | `src/app/og/route.tsx` | 1200×630 社交卡片，`ImageResponse` 生成 |
-| 其他 | `src/app/[locale]/[...rest]/page.tsx` | 一律 `notFound()` |
+| 404 | `public/404.html` | Cloudflare Pages 的静态 404 |
 
-默认语言的页面在根路径，其他语言加前缀。这个映射由两处配合完成：
-
-- `next.config.ts` 的 `beforeFiles` 重写把 `/posts/x` 送到 `/zh/posts/x`（只列了已知的路由形状，
-  所以 `/en/…` 不会被误伤）。
-- `src/proxy.ts` 把 `/zh/…` 308 回根路径，避免同一页有两个地址。
+这个仓库以 `output: 'export'` 构建到 `out/`；没有运行时路由。默认语言在开发时仍由 `next.config.ts`
+的 `beforeFiles` 重写到 `/zh`。生产构建由 `scripts/export-static.mjs` 把 `out/zh` 复制到根路径，
+`public/_redirects` 把 `/zh/…` 301 回根，避免同一页有两个地址；`content/images` 也在同一脚本里复制成
+`out/content/images`。
 
 `src/lib/urls.ts` 负责生成规范地址：默认语言不带前缀，其他语言带。canonical、hreflang、
 RSS 的链接都用它。文章、归档、标签和搜索页各自在 `generateMetadata` 里声明自己的

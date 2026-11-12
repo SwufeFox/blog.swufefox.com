@@ -1,0 +1,6 @@
+/og
+  Content-Type: image/png
+  Cache-Control: public, max-age=31536000, immutable
+
+/content/images/*
+  Cache-Control: public, max-age=31536000, immutable

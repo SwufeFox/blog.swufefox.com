@@ -3,29 +3,36 @@ import type { NextConfig } from 'next'
 import { siteConfig } from './src/site.config'
 
 const base = siteConfig.defaultLocale
+const isDev = process.env.NODE_ENV === 'development'
 
 /**
- * The default locale lives at the root of the site (`/posts/hello`), every
- * other locale gets a prefix (`/en/posts/hello`). The rewrites below send the
- * unprefixed paths to the default locale so both URLs resolve to the same
- * page; `src/proxy.ts` redirects the prefixed copy of the default locale
- * back to the root so a page is never served from two addresses.
+ * Cloudflare Pages serves a static export. Locale routing is completed by
+ * `scripts/export-static.mjs`, which copies the default-locale output to the
+ * root; `public/_redirects` sends the duplicate /zh paths back to the root.
+ * Development keeps the same root-path rewrites as the template.
  */
 const nextConfig: NextConfig = {
-  async rewrites() {
-    return {
-      beforeFiles: [
-        { source: '/', destination: `/${base}` },
-        { source: '/posts/:slug', destination: `/${base}/posts/:slug` },
-        { source: '/tags', destination: `/${base}/tags` },
-        { source: '/tags/:tag', destination: `/${base}/tags/:tag` },
-        { source: '/search', destination: `/${base}/search` },
-        { source: '/feed.xml', destination: `/${base}/feed.xml` },
-      ],
-      afterFiles: [],
-      fallback: [],
-    }
-  },
+  ...(isDev
+    ? {
+        async rewrites() {
+          return {
+            beforeFiles: [
+              { source: '/', destination: `/${base}` },
+              { source: '/posts/:slug', destination: `/${base}/posts/:slug` },
+              { source: '/tags', destination: `/${base}/tags` },
+              { source: '/tags/:tag', destination: `/${base}/tags/:tag` },
+              { source: '/search', destination: `/${base}/search` },
+              { source: '/feed.xml', destination: `/${base}/feed.xml` },
+            ],
+            afterFiles: [],
+            fallback: [],
+          }
+        },
+      }
+    : {
+        output: 'export',
+        images: { unoptimized: true },
+      }),
 }
 
 export default nextConfig

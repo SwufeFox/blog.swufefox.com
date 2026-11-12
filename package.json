@@ -13,7 +13,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "postbuild": "node scripts/export-static.mjs",
+    "preview": "npx serve out",
     "lint": "eslint src"
   },
   "dependencies": {

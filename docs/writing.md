@@ -98,9 +98,8 @@ $$
 ![示意图](../images/pipeline.svg)
 ```
 
-构建时会把相对路径改写成 `/content/images/…`，由 `src/app/content/[...path]` 提供。本地图片还会被读一次尺寸，写成 `width` / `height` 属性，并带上 `loading="lazy"` 和 `decoding="async"`，避免图片加载完成后把正文顶下去。
-路由只服务 `content/images/` 下的图片（PNG、JPEG、WebP、GIF、AVIF、SVG），不会公开文章源文件，
-并带一年长的缓存头。也可以直接写 `/content/images/…` 或外链 `https://…`。
+构建时会把相对路径改写成 `/content/images/…`，随后由 `scripts/export-static.mjs` 复制到 `out/content/images`；Cloudflare Pages 直接以静态文件提供，`public/_headers` 给它一年缓存。本地图片还会被读一次尺寸，写成 `width` / `height` 属性，并带上 `loading="lazy"` 和 `decoding="async"`，避免图片加载完成后把正文顶下去。
+也可以直接写 `/content/images/…` 或外链 `https://…`。
 
 图片宽度自适应正文栏，带一圈细边线；手机上不会溢出。
 

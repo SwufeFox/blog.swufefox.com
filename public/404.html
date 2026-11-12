@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>页面不存在 · SwufeFox</title>
+    <link rel="icon" href="/swufefox.jpg" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --navy: #0a2230;
+        --ink: #f8f8f5;
+        --muted: rgba(248, 248, 245, 0.68);
+        --gold: #e0b36a;
+        --danger: #e75b56;
+        --line: rgba(224, 179, 106, 0.28);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 28px;
+        display: grid;
+        place-items: center;
+        background: var(--navy);
+        color: var(--ink);
+        font-family: "Noto Sans SC", "Source Han Sans SC", system-ui, sans-serif;
+      }
+
+      main {
+        width: min(760px, 100%);
+        border: 1px solid var(--line);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 35%),
+          var(--navy);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 24px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 13px;
+        letter-spacing: 0.08em;
+      }
+
+      .brand img {
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--gold);
+        background: #fff;
+      }
+
+      .brand span:last-child {
+        color: var(--muted);
+        letter-spacing: 0;
+      }
+
+      .hazard {
+        height: 6px;
+        background: repeating-linear-gradient(
+          -45deg,
+          var(--gold) 0 8px,
+          #1d1f20 8px 16px
+        );
+      }
+
+      .body {
+        padding: 48px 32px 54px;
+      }
+
+      .code {
+        margin: 0 0 14px;
+        color: var(--danger);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        letter-spacing: 0.16em;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 7vw, 3.25rem);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+      }
+
+      .desc {
+        max-width: 44ch;
+        margin: 18px 0 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.8;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 18px;
+        margin-top: 32px;
+      }
+
+      .cta {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        padding: 0 20px;
+        background: var(--ink);
+        color: var(--navy);
+        font-weight: 700;
+        text-decoration: none;
+        clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%);
+      }
+
+      .cta:hover {
+        background: var(--gold);
+      }
+
+      .en {
+        color: var(--muted);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+      }
+
+      .en:hover {
+        color: var(--gold);
+      }
+
+      @media (max-width: 520px) {
+        body {
+          padding: 0;
+        }
+
+        main {
+          width: 100%;
+          border: 0;
+          min-height: 100vh;
+        }
+
+        .body {
+          padding: 36px 20px 48px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="brand">
+        <img src="/swufefox.jpg" alt="" width="34" height="34" />
+        <span>SWUFEFOX</span>
+        <span>/ notes</span>
+      </div>
+      <div class="hazard" aria-hidden="true"></div>
+      <div class="body">
+        <p class="code">ERR / 404</p>
+        <h1>页面不存在</h1>
+        <p class="desc">这个地址下没有内容，也许它已经被移动或者从未存在。</p>
+        <p class="actions">
+          <a class="cta" href="/">回到首页</a>
+          <a class="en" href="/en">English</a>
+        </p>
+      </div>
+    </main>
+  </body>
+</html>
