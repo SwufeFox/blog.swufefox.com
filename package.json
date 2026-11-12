@@ -1,9 +1,15 @@
 {
-  "name": "open-ak-blog-template",
+  "name": "blog.swufefox.com",
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
-  "description": "A Next.js blog template with an editorial reading layout and the ak-ui design system.",
+  "description": "The SwufeFox blog, built with Next.js and @swufefox/ak-ui-react.",
+  "author": "Magixyne <42512131@smail.swufe.edu.cn>",
+  "homepage": "https://blog.swufefox.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SwufeFox/blog.swufefox.com"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

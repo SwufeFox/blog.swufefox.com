@@ -130,6 +130,7 @@ export default async function PostPage({
               ]}
             />
             <span className="article-header__facts">
+              <span>{siteConfig.author}</span>
               <time dateTime={post.date}>{formatDate(post.date, resolved)}</time>
               <span>{copy.readMinutes(readingMinutes(post.body))}</span>
               {post.updated ? <span>{copy.updated(formatDate(post.updated, resolved))}</span> : null}

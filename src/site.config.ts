@@ -91,18 +91,18 @@ export interface SiteConfig {
 }
 
 export const siteConfig: SiteConfig = {
-  title: 'open-ak',
+  title: 'SwufeFox',
   suffix: '/ notes',
   description: {
-    zh: '关于代码、工具，以及把事情做简单的练习。',
-    en: 'Notes on code, tools, and the practice of making things simpler.',
+    zh: '关于代码、工具与开源项目的记录。',
+    en: 'Notes on code, tools, and open-source projects.',
   },
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://example.com',
-  author: 'your-name',
-  email: 'hello@example.com',
-  about: 'https://example.com/about',
-  repo: 'https://github.com/your-name/open-ak-blog-template',
-  sameAs: ['https://github.com/your-name', 'https://example.com/@your-name'],
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://blog.swufefox.com',
+  author: 'Magixyne',
+  email: '42512131@smail.swufe.edu.cn',
+  about: 'https://swufefox.com',
+  repo: 'https://github.com/SwufeFox/blog.swufefox.com',
+  sameAs: ['https://github.com/SwufeFox'],
   defaultLocale,
   locales: [...locales],
   localeNames: {
@@ -113,7 +113,7 @@ export const siteConfig: SiteConfig = {
     zh: { tags: '归档', search: '搜索', about: '关于' },
     en: { tags: 'Archive', search: 'Search', about: 'About' },
   },
-  postsOnHome: 0,
+  postsOnHome: 6,
   license: {
     name: 'CC BY-NC-SA 4.0',
     url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',

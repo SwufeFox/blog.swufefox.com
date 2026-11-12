@@ -1,5 +1,5 @@
 /* =========================================================================
-   open-ak blog template
+   blog.swufefox.com
    1. tokens        2. base        3. shell       4. header
    5. home          6. article     7. prose      8. figures & code
    9. archive       10. search     11. footer    12. ak-ui adapters
@@ -1638,6 +1638,7 @@ main {
   font-weight: 500;
   line-height: 1.65;
   letter-spacing: 0.01em;
+  text-transform: none;
 }
 
 .ak-site-menu [data-ak-menu-close] {
@@ -1780,6 +1781,7 @@ main {
   .article-body {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     gap: 0;
     padding-inline: 24px;
   }

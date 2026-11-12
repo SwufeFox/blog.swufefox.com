@@ -38,16 +38,16 @@ export async function GET() {
                 fontSize: 22,
               }}
             >
-              OP
+              SW
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 18 }}>
-              <div style={{ fontSize: 22, letterSpacing: 2 }}>OPEN-AK</div>
+              <div style={{ fontSize: 22, letterSpacing: 2 }}>SWUFEFOX</div>
               <div style={{ fontSize: 16, color: '#9c9c9c' }}>/ notes</div>
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontSize: 16, color: '#ffd800', letterSpacing: 4 }}>
-              A BILINGUAL NOTES TEMPLATE
+              NOTES ON CODE &amp; OPEN SOURCE
             </div>
             <div style={{ marginTop: 18, fontSize: 116, lineHeight: 1, letterSpacing: -4 }}>
               NOTES
@@ -55,7 +55,7 @@ export async function GET() {
             <div style={{ display: 'flex', width: 240, height: 12, marginTop: 28, background: '#ffd800' }} />
           </div>
           <div style={{ display: 'flex', maxWidth: 600, fontSize: 20, lineHeight: 1.4, color: '#9c9c9c' }}>
-            Notes on code, tools, and the practice of making things simpler.
+            Notes on code, tools, and open-source projects.
           </div>
         </div>
         <div

@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-`open-ak-blog-template` is a bilingual (Chinese default, English at `/en`) blog template built with Next.js 16.4.6, React 19.3, TypeScript (strict) and `@swufefox/ak-ui-react` 2.0. Markdown is parsed and rendered during `next build`; production runs as a Node server because locale routing, the custom 404 and image delivery need a runtime. Code is MIT; articles use the configured CC BY-NC-SA 4.0 license.
+`blog.swufefox.com` is the bilingual (Chinese default, English at `/en`) blog of SwufeFox, authored by Magixyne. It is derived from [`open-ak-blog-template`](https://github.com/SwufeFox/ak-blog-template) and keeps the same Next.js 16.4.6, React 19.3, TypeScript (strict) and `@swufefox/ak-ui-react` 2.0 foundation. Markdown is parsed and rendered during `next build`; production runs as a Node server because locale routing, the custom 404 and image delivery need a runtime. Code is MIT; articles use the configured CC BY-NC-SA 4.0 license.
 
 ## Architecture & Data Flow
 
@@ -74,7 +74,7 @@ Set `NEXT_PUBLIC_SITE_URL` before `npm run build` for real canonical/RSS/sitemap
 - Node.js **20.9+** and npm with the committed `package-lock.json` (lockfile v3). Next.js is pinned to 16.4.6, React 19.3.0; do not assume older Next conventions.
 - This Next.js requires reading the relevant guide in `node_modules/next/dist/docs/` before changing framework code. `params` in pages/layouts are Promises; `src/proxy.ts` is the middleware entry.
 - The app needs a Node runtime: rewrites/proxy, the dynamic 404 catch-all and the image route are runtime features. Static export is **not** supported as-is; `docs/deploy.md` documents the migration. Vercel/Netlify and `next start` self-hosting are supported.
-- `src/site.config.ts` defaults `url` to `https://example.com`; override with `NEXT_PUBLIC_SITE_URL` at build time. Deployment port defaults to 3000; `PORT` overrides it.
+- `src/site.config.ts` defaults `url` to `https://blog.swufefox.com`; override with `NEXT_PUBLIC_SITE_URL` at build time. Deployment port defaults to 3000; `PORT` overrides it.
 
 ## Testing & QA
 
