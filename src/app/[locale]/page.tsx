@@ -31,13 +31,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const posts = await getPosts(resolved)
   const visible = siteConfig.postsOnHome > 0 ? posts.slice(0, siteConfig.postsOnHome) : posts
   const categories = await getCategoryCounts(resolved)
-  const heroTitle = siteConfig.suffix.replace(/^\s*\/\s*/, '').trim() || siteConfig.title
+  const heroTitle = siteConfig.title
 
   return (
     <>
       <AkHero
         className="home-hero"
-        eyebrow={siteConfig.title}
+        eyebrow={siteConfig.heroKicker ?? siteConfig.title}
         title={heroTitle}
         titleAs="h1"
         subtitle={siteConfig.description[resolved]}

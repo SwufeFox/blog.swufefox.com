@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "license": "MIT",
-  "description": "The SwufeFox blog, built with Next.js and @swufefox/ak-ui-react.",
+  "description": "The SwufeFox community blog — a student-led open-source community at SWUFE.",
   "author": "Magixyne <42512131@smail.swufe.edu.cn>",
   "homepage": "https://blog.swufefox.com",
   "repository": {

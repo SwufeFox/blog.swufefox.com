@@ -10,6 +10,8 @@
 | `title` | 站点名，页头和 `<title>` 都用它 |
 | `suffix` | 跟在站名后面的小字，如 `/ notes`；`title + suffix` 组成页面标题 |
 | `description` | 每个语言一句：首页主标题、meta description、RSS 描述 |
+| `heroKicker` | 首页 Hero 的英文小标，如 `SWUFE // OPEN SOURCE`；省略时用 `title` |
+| `motto` | 页脚的品牌句，如 `The final variable is yours to change.` |
 | `url` | 部署后的绝对地址（不带结尾斜杠），用于 canonical、RSS、sitemap、JSON-LD |
 | `author` | 作者名，页脚与结构化数据 |
 | `email` | 页脚邮箱，可省略 |

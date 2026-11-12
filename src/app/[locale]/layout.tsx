@@ -57,7 +57,7 @@ export async function generateMetadata({
       images: [SOCIAL_IMAGE],
     },
     robots: { index: true, follow: true },
-    icons: { icon: '/favicon.svg' },
+    icons: { icon: '/swufefox.jpg' },
   }
 }
 

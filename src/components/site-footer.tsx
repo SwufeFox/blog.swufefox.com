@@ -15,6 +15,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
       <div className="site-footer__identity">
         <AkCodeId>{siteConfig.title}</AkCodeId>
         <span>© {year} {siteConfig.author}</span>
+        {siteConfig.motto ? <span className="site-footer__motto">{siteConfig.motto}</span> : null}
       </div>
       <nav aria-label={siteConfig.nav[locale].about}>
         {siteConfig.sameAs?.map((url) => (

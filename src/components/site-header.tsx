@@ -14,7 +14,7 @@ export function SiteHeader({ locale, otherLocale }: { locale: Locale; otherLocal
     <header className="site-header">
       <Link className="brand" href={homePath(locale)}>
         <AkCut as="span" size="sm" className="brand__mark" aria-hidden="true">
-          {siteConfig.title.slice(0, 2).toUpperCase()}
+          <img className="brand__avatar" src="/swufefox.jpg" alt="" width={34} height={34} />
         </AkCut>
         <span className="brand__name" translate="no">{siteConfig.title}</span>
         <span className="brand__suffix">{siteConfig.suffix}</span>

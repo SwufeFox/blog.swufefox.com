@@ -83,6 +83,10 @@ export interface SiteConfig {
   nav: Record<Locale, { tags: string; search: string; about: string }>
   /** Posts shown per page on the home page. 0 means "all of them". */
   postsOnHome: number
+  /** Short English kicker above the hero title. */
+  heroKicker?: string
+  /** Brand motto shown in the footer. */
+  motto?: string
   /** Content licence shown in the article colophon. */
   license: {
     name: string
@@ -94,15 +98,17 @@ export const siteConfig: SiteConfig = {
   title: 'SwufeFox',
   suffix: '/ notes',
   description: {
-    zh: '关于代码、工具与开源项目的记录。',
-    en: 'Notes on code, tools, and open-source projects.',
+    zh: '西南财经大学的学生开源社区。我们写代码、做量化，也把学到的东西开源。',
+    en: 'A student-led open-source community at SWUFE. We build software, research markets, and open-source what we learn.',
   },
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://blog.swufefox.com',
   author: 'Magixyne',
-  email: '42512131@smail.swufe.edu.cn',
-  about: 'https://swufefox.com',
+  email: 'magi0@swufefox.com',
+  about: 'https://github.com/SwufeFox',
   repo: 'https://github.com/SwufeFox/blog.swufefox.com',
   sameAs: ['https://github.com/SwufeFox'],
+  heroKicker: 'SWUFE // OPEN SOURCE',
+  motto: 'The final variable is yours to change.',
   defaultLocale,
   locales: [...locales],
   localeNames: {

@@ -1,8 +1,14 @@
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import { ImageResponse } from 'next/og'
 
 export const dynamic = 'force-static'
 
 export async function GET() {
+  const fox = `data:image/jpeg;base64,${(
+    await readFile(join(process.cwd(), 'public', 'swufefox.jpg'))
+  ).toString('base64')}`
+
   return new ImageResponse(
     (
       <div
@@ -12,7 +18,7 @@ export async function GET() {
           width: '100%',
           height: '100%',
           overflow: 'hidden',
-          background: '#0f0f10',
+          background: '#0a2230',
           color: '#f8f8f5',
         }}
       >
@@ -33,12 +39,11 @@ export async function GET() {
                 justifyContent: 'center',
                 width: 56,
                 height: 56,
-                background: '#f8f8f5',
-                color: '#0f0f10',
-                fontSize: 22,
+                background: '#fff',
+                border: '1px solid #e0b36a',
               }}
             >
-              SW
+              <img src={fox} width={54} height={54} alt="" />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 18 }}>
               <div style={{ fontSize: 22, letterSpacing: 2 }}>SWUFEFOX</div>
@@ -46,16 +51,16 @@ export async function GET() {
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: 16, color: '#ffd800', letterSpacing: 4 }}>
-              NOTES ON CODE &amp; OPEN SOURCE
+            <div style={{ fontSize: 16, color: '#e0b36a', letterSpacing: 4 }}>
+              SWUFE // OPEN SOURCE
             </div>
-            <div style={{ marginTop: 18, fontSize: 116, lineHeight: 1, letterSpacing: -4 }}>
-              NOTES
+            <div style={{ marginTop: 18, fontSize: 92, lineHeight: 1, letterSpacing: -3 }}>
+              SWUFEFOX
             </div>
-            <div style={{ display: 'flex', width: 240, height: 12, marginTop: 28, background: '#ffd800' }} />
+            <div style={{ display: 'flex', width: 240, height: 12, marginTop: 28, background: '#e0b36a' }} />
           </div>
           <div style={{ display: 'flex', maxWidth: 600, fontSize: 20, lineHeight: 1.4, color: '#9c9c9c' }}>
-            Notes on code, tools, and open-source projects.
+            A student-led open-source community at SWUFE. We build software, research markets, and open-source what we learn.
           </div>
         </div>
         <div
@@ -65,10 +70,26 @@ export async function GET() {
             right: 0,
             bottom: 0,
             display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             width: '28%',
-            background: '#ffd800',
+            background: '#f6efe3',
           }}
-        />
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 260,
+              height: 260,
+              background: '#fff',
+              border: '1px solid #e0b36a',
+            }}
+          >
+            <img src={fox} width={240} height={240} alt="" />
+          </div>
+        </div>
       </div>
     ),
     { width: 1200, height: 630 },

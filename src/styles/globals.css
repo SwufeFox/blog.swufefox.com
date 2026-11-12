@@ -26,6 +26,9 @@
   --site-danger: var(--ak-signal-danger, #e33b3b);
   --site-wash: var(--ak-surface-sunken-2, #f2f3f4);
   --site-selection: color-mix(in srgb, var(--ak-signal-info, #0098dc) 20%, var(--site-paper));
+  --site-brand-navy: #0a2230;
+  --site-brand-gold: #e0b36a;
+  --site-brand-cream: #f6efe3;
   --site-display: var(--ak-font-display, 'Bender', 'Oswald', 'Noto Sans SC', sans-serif);
   --site-sans: var(--ak-font-sans, system-ui, sans-serif);
   --site-mono: var(--ak-font-mono, ui-monospace, monospace);
@@ -205,14 +208,19 @@ main {
 .brand__mark {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
-  background: var(--site-ink);
-  color: var(--site-paper);
-  font-family: var(--site-mono);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--site-brand-gold) 55%, transparent);
+}
+
+.brand__avatar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .brand__suffix {
@@ -344,7 +352,18 @@ main {
     calc(100% - var(--ak-cut-lg, 1.5rem)) 100%,
     0 100%
   );
-  --ak-hero-accent: var(--site-action);
+  --ak-hero-bg: var(--site-brand-navy);
+  --ak-hero-accent: var(--site-brand-gold);
+}
+
+.home-hero .ak-hero__side {
+  border-left: 1px solid color-mix(in srgb, var(--site-brand-gold) 55%, transparent);
+  background: #fff url('/swufefox.jpg') center / 74% no-repeat;
+  opacity: 1;
+}
+
+.home-hero .ak-hero__side::after {
+  display: none;
 }
 
 .home-archive {
@@ -1585,6 +1604,12 @@ main {
   flex-wrap: wrap;
   align-items: baseline;
   gap: 4px 16px;
+}
+
+.site-footer__motto {
+  color: var(--site-muted);
+  font-family: var(--site-label);
+  letter-spacing: 0.03em;
 }
 
 .site-footer__identity .ak-code-id {

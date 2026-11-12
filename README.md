@@ -1,12 +1,14 @@
 # blog.swufefox.com
 
-SwufeFox 的博客，作者 [Magixyne](https://github.com/SwufeFox)。站点从
-[`open-ak-blog-template`](https://github.com/SwufeFox/ak-blog-template) 生长而来，保留模板的
-构建方式与 ak-ui 设计语言。
+SwufeFox（西南财经大学学生开源社区）的博客，作者 [Magixyne](https://github.com/Magixyne)。
+我们写代码、做量化，也把学到的东西开源。
 
-界面以档案纸面、深色 Hero 和动作黄为主；首页、文章、归档、搜索、RSS 与 404 都由同一套
-Next.js App Router 路由生成。文章在 `next build` 时解析、校验并渲染，运行时只负责路由、
-图片与 404。
+> The final variable is yours to change.
+
+站点从 [`open-ak-blog-template`](https://github.com/SwufeFox/ak-blog-template) 生长而来，保留模板的
+构建方式与 ak-ui 设计语言。界面以档案纸面、SwufeFox 的狐狸标记、海军蓝与金色 Hero 为焦点；
+首页、文章、归档、搜索、RSS 与 404 都由同一套 Next.js App Router 路由生成。文章在
+`next build` 时解析、校验并渲染，运行时只负责路由、图片与 404。
 
 - **双语**：中文在根路径，英文在 `/en`；同名文件互为翻译。
 - **Markdown**：目录、代码高亮、公式、数据表、KPI、Mermaid、手写 SVG、ECharts。
@@ -64,6 +66,12 @@ src/styles/globals.css    ak-ui 主题映射与全站样式
 默认部署到 Node 主机或 Vercel / Netlify，使用 `next start`。代理、动态 404 与
 `/content/images/` 图片路由需要运行时；纯静态导出需要按 [`docs/deploy.md`](docs/deploy.md)
 迁移。
+
+## 关于 SwufeFox
+
+- GitHub：<https://github.com/SwufeFox>
+- 加入 / 贡献：<magi0@swufefox.com>
+- 第一篇文章：[把博客做成一台档案终端](content/posts/how-this-blog-was-built.md)
 
 ## 许可
 

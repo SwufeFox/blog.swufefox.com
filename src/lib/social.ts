@@ -6,5 +6,5 @@ export const SOCIAL_IMAGE = {
   url: `${base}/og`,
   width: 1200,
   height: 630,
-  alt: 'SwufeFox / notes — notes on code, tools, and open-source projects.',
+  alt: 'SwufeFox / notes — the student-led open-source community at SWUFE.',
 }

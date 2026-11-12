@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-`blog.swufefox.com` is the bilingual (Chinese default, English at `/en`) blog of SwufeFox, authored by Magixyne. It is derived from [`open-ak-blog-template`](https://github.com/SwufeFox/ak-blog-template) and keeps the same Next.js 16.4.6, React 19.3, TypeScript (strict) and `@swufefox/ak-ui-react` 2.0 foundation. Markdown is parsed and rendered during `next build`; production runs as a Node server because locale routing, the custom 404 and image delivery need a runtime. Code is MIT; articles use the configured CC BY-NC-SA 4.0 license.
+`blog.swufefox.com` is the bilingual (Chinese default, English at `/en`) blog of SwufeFox, the student-led open-source community at Southwestern University of Finance and Economics (SWUFE), authored by Magixyne. It is derived from [`open-ak-blog-template`](https://github.com/SwufeFox/ak-blog-template) and keeps the same Next.js 16.4.6, React 19.3, TypeScript (strict) and `@swufefox/ak-ui-react` 2.0 foundation. Markdown is parsed and rendered during `next build`; production runs as a Node server because locale routing, the custom 404 and image delivery need a runtime. Code is MIT; articles use the configured CC BY-NC-SA 4.0 license.
 
 ## Architecture & Data Flow
 
