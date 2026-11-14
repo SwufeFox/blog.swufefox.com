@@ -1,0 +1,19 @@
+{
+  "title": "SwufeFox",
+  "suffix": "/ notes",
+  "description": {
+    "zh": "西南财经大学的学生开源社区。我们写代码、做量化，也把学到的东西开源。",
+    "en": "A student-led open-source community at SWUFE. We build software, research markets, and open-source what we learn."
+  },
+  "url": "https://blog.swufefox.com",
+  "author": "Magixyne",
+  "email": "magi0@swufefox.com",
+  "about": "https://github.com/SwufeFox",
+  "repo": "https://github.com/SwufeFox/blog.swufefox.com",
+  "sameAs": ["https://github.com/SwufeFox"],
+  "postsOnHome": 6,
+  "license": {
+    "name": "CC BY-NC-SA 4.0",
+    "url": "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+  }
+}

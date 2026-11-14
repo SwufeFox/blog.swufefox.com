@@ -1,95 +1,41 @@
 # Repository Guidelines
 
-## Project Overview
+## Scope
 
-`blog.swufefox.com` is the bilingual (Chinese default, English at `/en`) blog of SwufeFox, the student-led open-source community at Southwestern University of Finance and Economics (SWUFE), authored by Magixyne. It is derived from [`open-ak-blog-template`](https://github.com/SwufeFox/ak-blog-template) and keeps the same Next.js 16.4.6, React 19.3, TypeScript (strict) and `@swufefox/ak-ui-react` 2.0 foundation. Markdown is parsed and rendered during `next build`; this repository exports a static site for Cloudflare Pages, with no Node runtime in production. The upstream template still supports `next start`; this blog does not. Code is MIT; articles use the configured CC BY-NC-SA 4.0 license.
+`blog.swufefox.com` is the content repository for the bilingual SwufeFox community blog, authored by Magixyne. Chinese posts are published at the root locale; English translations use `/en`.
 
-## Architecture & Data Flow
+The application, styles, Markdown pipeline and static builder live in [`SwufeFox/ak-blog`](https://github.com/SwufeFox/ak-blog). Keep application code, package manifests, dependency lockfiles and framework configuration in that repository.
 
-- **Content**: `content/posts/*.md` is the default (`zh`) collection; `content/posts/en/*.md` holds translations with matching filenames/slugs. `src/lib/posts.ts` parses YAML with `gray-matter`, validates it, caches the collection at module scope, sorts newest-first, filters drafts in production and derives tags/categories/translations.
-- **Front matter**: required `title`, `description` and `date`; date/`updated` must match `YYYY-MM-DD` (format check only); `tags` must be a list; optional `category` (legacy `tag` accepted); `draft: true` is included in development and hidden in production. Errors must name the source file, e.g. `content/posts/x.md: missing required field "title"`.
-- **Markdown**: `src/lib/markdown.ts` builds a unified processor per render. Authored raw HTML is stripped before `rehypeRaw` processes pipeline-generated HTML. It handles GFM, math, Shiki code, h2/h3 TOC extraction (autolink `#` excluded), and the custom `data`, `stats`, `mermaid`, `sketch` and `echarts` fences.
-- **Images**: relative post images resolve to `/content/images/...`; local files get intrinsic `width`/`height` via `image-size` plus `loading="lazy"`/`decoding="async"`. Static export has no image route; `scripts/export-static.mjs` copies `content/images` into `out/content/images` after the build.
-- **Routing**: default locale lives at `/`, other locales at `/en/...`. In development `next.config.ts` rewrites bare paths to `/zh`; production uses `output: 'export'`. The locale layout owns locale `generateStaticParams`; posts and tag terms add their own content params; the feed is `force-static`. `scripts/export-static.mjs` copies `/zh` output to the root and `public/_redirects` 301s `/zh/...` back to root. `src/app/[locale]/[...rest]`, `src/proxy.ts` and the image route were intentionally removed.
-- **Metadata**: home canonical comes from `src/app/[locale]/layout.tsx`; posts, archive, tag terms and search declare their own `alternates.canonical` and `languages` in `generateMetadata`. Search is `noindex`; 404 is `noindex/nofollow`. All pages share the 1200×630 `/og` social card (`src/app/og/route.tsx`, descriptor in `src/lib/social.ts`) through layout/post Open Graph and Twitter metadata.
-- **Search**: server pages pass localized post summaries to `src/components/search-client.tsx`; filtering and ranking happen client-side (title 4, tag/category 2, summary 1). No search backend or index file. The query is mirrored to `?q=` with `history.replaceState` so links reload correctly.
-- **ak-ui boundary**: `@swufefox/ak-ui-react` is a client-entry package but can be imported from server components; every component is SSR'd then hydrated. There is **no `src/components/ak.ts` forwarding layer** — import primitives directly. `AkMobileMenu` is mounted only after hydration via `useSyncExternalStore` to avoid the package's module-counter ID mismatch.
-- **Theme**: `<html data-ak-theme="archive">` (light) or `terminal` (dark). An inline pre-paint script reads `localStorage['ak-theme']` and updates `<meta name="theme-color">`; storage key and browser-chrome colors live in `src/lib/theme.ts`. The CSS toggle in `theme-toggle.tsx` renders both icon/label states and switches them on the attribute. `useSyncExternalStore` keeps `aria-pressed` in sync.
-- **Client runtimes**: `site-nav.tsx` (path/current page/mobile menu), `theme-toggle.tsx`, `search-client.tsx`, `post-toc.tsx` (scroll-position scrollspy), `reading-progress.tsx` and `post-runtime.tsx` (copy buttons; dynamic Mermaid/ECharts). Keep new browser behavior in similarly small client components.
+## Files
 
-## Key Directories
+- `content/posts/*.md`: Chinese articles; the filename is the public slug.
+- `content/posts/en/*.md`: English translations with matching filenames.
+- `content/images/`: article images and site artwork.
+- `site.json`: site identity, localized descriptions, canonical origin, author, links, home-page count and content license, using the upstream `SiteOptions` contract.
+- `README.md`: writing, building and deployment instructions for this content repository.
 
-| Path | Purpose |
-| --- | --- |
-| `src/app/` | App Router pages, metadata, feed/sitemap/robots and image route |
-| `src/components/` | Shared UI and isolated client behavior |
-| `src/lib/` | Post loading/validation, Markdown pipeline, i18n, URL helpers, section kickers |
-| `src/styles/` | Global tokens, ak-ui adaptations, layout and responsive rules |
-| `content/posts/` | Markdown posts; locale subdirectory holds translations |
-| `content/images/` | Post images, served by the `/content/...` route |
-| `public/` | Static passthrough: fox mark, 404, `_redirects`, `_headers` |
-| `docs/` | Writing, configuration, architecture, design-system and deployment guides |
+## Writing
 
-## Development Commands
+- Front matter requires `title`, `description` and `date`. Dates and optional `updated` use `YYYY-MM-DD`; `tags` is a list. `category` is optional. `draft: true` excludes a post from production output.
+- Keep translation filenames aligned and preserve published slugs unless a redirect is deliberately arranged upstream.
+- Chinese image references use `../images/name.ext`; English references use `../../images/name.ext`. The builder exports images under `/content/images/`.
+- Markdown supports GFM, math, highlighted code and `data`, `stats`, `mermaid`, `sketch`, `echarts` fences. Follow the upstream [writing guide](https://github.com/SwufeFox/ak-blog/blob/main/docs/writing.md).
+- Preserve authored text and existing article licenses during repository maintenance. Articles use CC BY-NC-SA 4.0; the existing MIT license remains in `LICENSE`.
+- `site.json` accepts data only. Follow upstream configuration fields rather than restoring TypeScript configuration or application customizations here.
+
+## Build & Verification
+
+Node.js 20.9+ is needed only for building; Node.js 22 is recommended. Use the published version 1.0.2 explicitly:
 
 ```sh
-npm ci
-npm run dev          # http://localhost:3000
-npm run lint         # eslint src
-npx tsc --noEmit     # type check; no package script
-npm run build        # static export to out/ + content/Markdown validation
-npm run preview      # npx serve out
+npx --yes @swufefox/ak-blog@1.0.2 build --content ./content --config ./site.json --out ./out
 ```
 
-Set `NEXT_PUBLIC_SITE_URL` before `npm run build` for real canonical/RSS/sitemap URLs. For a local preview, `npm run preview` serves `out/`; pass `--listen 3048` to `npx serve` if needed. There is no `test` script.
+Keep the builder version pinned rather than following `latest`. Do not install application dependencies in this content repository.
 
-## Code Conventions & Common Patterns
-
-- TypeScript is strict; use the `@/*` alias for `src/`. File names are kebab-case, React exports PascalCase.
-- Keep template identity/options in `src/site.config.ts`; UI copy belongs in `src/lib/i18n.ts` and `UiStrings` must stay exhaustive per locale. Use `src/lib/urls.ts` (`homePath`, `postPath`, `tagsPath`, `tagPath`, `searchPath`, `feedPath`) instead of building locale URLs by hand.
-- Content loading uses `node:fs/promises`; pass serializable values to client components as props. Image sizing reads local file headers synchronously during the build. Keep local UI state in client components; use `useSyncExternalStore` where server and browser snapshots must agree.
-- No dependency-injection container. Dependencies are explicit props/arguments; shared site settings come from the typed `siteConfig`.
-- Preserve the plugin order in `src/lib/markdown.ts` and document new fenced-block syntax in `docs/writing.md`. `sketch` SVG is sanitized; `echarts` accepts JSON options only.
-- Per-route canonical metadata is not optional: add `alternates.canonical` and `languages` when creating a route. Do not rely on the layout canonical for new routes.
-- Styling maps semantic `--ak-*` tokens through `--site-*`. Ink carries structure/text; action yellow is for real state/interaction; danger red is reserved for errors. Follow the documented `accent` intensity: no fake telemetry, extra cuts/stripes or permanent glow. Breakpoints are 1000/860/700/360px.
-- No formatter is configured. Match nearby formatting and use ESLint as the style check. Prefer contextual errors over silent recovery; unknown routes use `notFound()`.
-
-## Important Files
-
-- `src/site.config.ts` — identity, locales, navigation, URL, licenses.
-- `src/lib/posts.ts` — discovery, front-matter validation, caching, translations, tags/categories.
-- `src/lib/markdown.ts` — unified pipeline, custom fences, TOC, media metadata.
-- `src/lib/urls.ts` — locale-aware route builders.
-- `next.config.ts` — dev rewrites; production static export.
-- `src/app/[locale]/layout.tsx` — theme boot script, shell, metadata defaults.
-- `scripts/export-static.mjs` — copies default-locale output, content images and branded 404 into `out/`.
-- `src/app/og/route.tsx` + `src/lib/social.ts` — 1200×630 social card and its metadata descriptor.
-- `src/components/site-nav.tsx`, `theme-toggle.tsx`, `search-client.tsx`, `post-toc.tsx`, `post-runtime.tsx` — hydration-sensitive client behavior.
-- `src/styles/globals.css` — tokens, layout, ak-ui adaptations, print rules.
-- `package.json`, `package-lock.json`, `tsconfig.json`, `eslint.config.mjs` — scripts, locked deps, compiler/lint config.
-- `public/_redirects`, `public/_headers`, `public/404.html` — Cloudflare routing, OG content type and branded static 404.
-- `docs/architecture.md`, `docs/writing.md`, `docs/configuration.md`, `docs/design-system.md`, `docs/deploy.md` — implementation, authoring, setup, UI rules, deployment.
-
-## Runtime/Tooling Preferences
-
-- Node.js **20.9+** and npm with the committed `package-lock.json` (lockfile v3). Next.js is pinned to 16.4.6, React 19.3.0; do not assume older Next conventions.
-- This Next.js requires reading the relevant guide in `node_modules/next/dist/docs/` before changing framework code. `params` in pages/layouts are Promises. The dev server uses the root rewrites; the production build is a static export.
-- Cloudflare Pages serves `out/` from `npm run build`: framework preset Next.js (Static HTML Export), build command `npm run build`, output `out`, root directory empty. The postbuild step needs to run, so use `npm run build` rather than `npx next build`. No Node runtime is deployed.
-- `src/site.config.ts` defaults `url` to `https://blog.swufefox.com`; override with `NEXT_PUBLIC_SITE_URL` at build time (for Pages preview use `https://blog-swufefox-com.pages.dev`). Build-time Node 20.9+ is required; there is no production `PORT`.
-
-## Testing & QA
-
-- No test runner, test files, coverage setup, CI workflow or `npm test` exists. Do not claim a test suite passed.
-- For code changes run `npm run lint`, `npx tsc --noEmit`, and `npm run build`. The build exercises real front matter and Markdown rendering, and fails on invalid content.
-- After route/browser changes run `npm run build`, then `npm run preview` (or `npx serve out`) and smoke the affected pages: both locale homes (`/`, `/en`), a post, tag index/term, search, feeds, and a missing path/404. Check the `archive` and `terminal` themes, theme persistence, keyboard focus, console errors and narrow-viewport overflow.
-- Content-specific checks: malformed YAML/front matter and invalid ECharts JSON fail at build; Mermaid errors surface in the browser console. There is no automated substitute for these manual checks.
-
-<!-- BEGIN:nextjs-agent-rules -->
-
-## This is NOT the Next.js you know
-
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
-
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
-
-<!-- END:nextjs-agent-rules -->
+- A real `ak-blog build` validates front matter and Markdown. For repository extraction, also verify that articles and image bytes are preserved.
+- There is no local lint command, TypeScript project or test runner. Do not run obsolete `npm run build`, `npm run lint` or `tsc` commands here.
+- `out/` is generated and ignored. The builder accepts an empty/missing output directory or its own previous output, not an unrelated old export.
+- `NEXT_PUBLIC_SITE_URL` overrides `site.json.url` at build time for canonical, RSS and sitemap URLs.
+- Cloudflare Pages uses preset `None`, the command above, and output `out`. Deployment is fully static; no Node runtime or Functions are required.
+- Renderer or UI changes and their browser checks belong in `ak-blog`; content changes should be checked against the real builder.
